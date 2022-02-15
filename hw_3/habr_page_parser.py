@@ -24,12 +24,26 @@ class HabrArticlesParser:
         'sec-ch-ua-mobile': '?0'}
 
     def __init__(self, keywords: List[str]):
-        self.keywords = [kw.lower() for kw in keywords] if keywords else keywords
+        self.__keywords = [kw.lower() for kw in keywords] if keywords else keywords
         self.text: str = self._get_page(self.URL)
         self.soup: BeautifulSoup = self._get_soup(self.text)
         self.articles: Optional[bs4.element.ResultSet] = None
         self.filtered_articles: Optional[bs4.element.ResultSet] = None
         self.articles_meta_info: list = []
+
+    @property
+    def keywords(self):
+        return self.__keywords
+
+    @keywords.setter
+    def keywords(self, value):
+        if type(value) != list:
+            raise TypeError("'value' parameter type must be list!")
+        self.__keywords = [str(elem) for elem in value]
+
+    @keywords.deleter
+    def keywords(self):
+        self.__keywords = []
 
     @staticmethod
     def _get_soup(text: str) -> bs4.BeautifulSoup:
@@ -106,7 +120,7 @@ class HabrArticlesParser:
 
     def get_articles(self, content_search: bool = False) -> List[bs4.element.Tag]:
         if type(content_search) != bool:
-            raise TypeError("content_search attribute has to have bool type!")
+            raise TypeError("'content_search' parameter type must be bool!")
         articles = self.__get_all_articles()
         preview_check = self.__check_preview(articles)
         if not self.keywords:
@@ -130,9 +144,9 @@ class HabrArticlesParser:
 
 
 def main() -> HabrArticlesParser:
-    keywords = list(input("Enter words divided by space to search by: ").split())
+    # keywords = list(input("Enter words divided by space to search by: ").split())
     # Для тестирования
-    # keywords = ['дизайн', 'фото', 'web', 'python']
+    keywords = ['дизайн', 'фото', 'web', 'python']
     parser = HabrArticlesParser(keywords)
     return parser
 
