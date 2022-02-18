@@ -27,15 +27,14 @@ class FlatIterator:
 
     @classmethod
     def __unnest_recursively(cls, elem) -> list:
-        result = []
         if type(elem) != list:
-            return [elem]
-        for item in elem:
-            result.extend(cls.__unnest_recursively(item))
-        return result
+            yield elem
+        else:
+            for item in elem:
+                yield from cls.__unnest_recursively(item)
 
     def __iter__(self):
-        return iter(self.__unnest_recursively(nested_lst))
+        return self.__unnest_recursively(self.__nested_list)
 
 
 if __name__ == "__main__":
